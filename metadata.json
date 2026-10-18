@@ -1,0 +1,6 @@
+{
+  "name": "ميزان",
+  "description": "تطبيق متكامل لتحليل الشعر العربي عروضياً واستخراج التفاعيل والبحور والإعراب والضبط الصوتي",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

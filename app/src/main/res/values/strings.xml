@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">ميزان</string>
+    <string name="app_header_title">مُحَلِّلُ الشِّعْرِ العَرَبِيّ</string>
+    <string name="app_header_subtitle">الناقد والمدقق العروضي الذكي</string>
+    <string name="nav_analyzer">المحلل</string>
+    <string name="nav_meters">البحور</string>
+    <string name="nav_saved">المحفوظات</string>
+    <string name="smart_diwan">الديوان الذكي</string>
+    <string name="input_label">أدخل شطري البيت الشعري أو البيت كاملاً</string>
+    <string name="input_placeholder">عَلى قَدْرِ أَهْلِ العَزْمِ تَأْتِي العَزَائِمُ ... وَتَأْتِي عَلَى قَدْرِ الكِرَامِ المَكَارِمُ</string>
+    <string name="input_hint_separator">افصل بين الصدر والعجز بـ (…) أو (/)</string>
+    <string name="input_hint_khalil">✤ بحور الخليل الفراهيدي ✤</string>
+    <string name="opt_meter">العروض والبحر</string>
+    <string name="opt_diacritics">الضبط والتشكيل</string>
+    <string name="opt_grammar">الإعراب والنحو</string>
+    <string name="btn_analyze">تحليل البيت الشعري</string>
+    <string name="btn_sample">نموذج</string>
+    <string name="btn_clear">مسح</string>
+</resources>

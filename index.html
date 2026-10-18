@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>ميزان</title>
+  <meta name="apple-mobile-web-app-title" content="ميزان" />
+  <meta name="application-name" content="ميزان" />
+  <meta property="og:title" content="ميزان" />
+  
+  <!-- Google Fonts: Amiri & Tajawal & Material Symbols Outlined -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Tajawal:wght@400;500;700;800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            navy: { 900: "#0A192F", 800: "#0F2342", 700: "#132D54" },
+            royal: { 900: "#1E3A8A", 800: "#1E40AF", 700: "#2563EB", 100: "#DBEAFE", 50: "#EFF6FF" },
+            gold: { 700: "#B45309", 600: "#D97706", 500: "#F59E0B", 400: "#FBBF24", 100: "#FEF3C7" },
+            slate: { 900: "#0F172A", 800: "#1E293B", 700: "#334155", 600: "#475569", 500: "#64748B", 400: "#94A3B8", 200: "#E2E8F0", 100: "#F1F5F9", 50: "#F8FAFC" }
+          },
+          fontFamily: {
+            ui: ["Tajawal", "sans-serif"],
+            verse: ["Amiri", "serif"]
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #F8FAFC;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      overscroll-behavior: none;
+    }
+    .pb-safe {
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    .pt-safe {
+      padding-top: env(safe-area-inset-top, 0px);
+    }
+    ::-webkit-scrollbar {
+      display: none;
+    }
+    /* منع letter-spacing على أي نص عربي لحماية اتصال الحروف */
+    * {
+      letter-spacing: normal !important;
+    }
+    .font-mono, [data-allow-tracking="true"] {
+      letter-spacing: 0.15em !important;
+    }
+    .foot-highlight {
+      border-color: #FBBF24 !important;
+      box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.4) !important;
+    }
+  </style>
+
+  <!-- Favicon and App Manifest -->
+  <link rel="icon" type="image/png" href="/logo.png" />
+  <link rel="apple-touch-icon" href="/logo.png" />
+  <meta name="theme-color" content="#0A192F" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+
+  <!-- Arudi Engine Bundle -->
+  <script src="engine.bundle.js"></script>
+</head>
+<body class="bg-[#F8FAFC] font-ui text-slate-800 antialiased flex flex-col min-h-screen select-none">
+
+  <!-- الشاشة الافتتاحية (Splash Screen) -->
+  <div id="splash-screen" class="fixed inset-0 z-[100] bg-[#0A192F] flex flex-col items-center justify-center p-8 text-center transition-opacity duration-300">
+    <div id="splash-content" class="flex flex-col items-center gap-3 transition-opacity duration-500 opacity-0">
+      <img src="logo.png" alt="شعار ميزان" class="w-[128px] h-[128px] object-contain" />
+      <h1 class="text-[44px] font-verse text-[#FBBF24] font-bold leading-tight" style="letter-spacing: 0 !important;">ميزان</h1>
+      <p class="text-[14px] font-ui text-[#CBD5E1]">مُحَلِّلُ الشِّعْرِ العَرَبِيّ</p>
+    </div>
+  </div>
+
+  <!-- الشريط العلوي (بدون أي زر إضافي كما هو محدد في التصميم) -->
+  <header class="fixed top-0 w-full z-50 bg-[#0A192F] text-white border-b border-royal-900/60 shadow-md pt-safe">
+    <div class="h-16 px-4 flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-gold-600/20 border border-gold-500/40 flex items-center justify-center p-0.5">
+          <img src="logo.png" alt="شعار ميزان" class="w-8 h-8 object-contain" />
+        </div>
+        <div class="flex flex-col text-right">
+          <h1 class="text-[17px] font-bold text-white leading-tight">مُحَلِّلُ الشِّعْرِ العَرَبِيّ</h1>
+          <p class="text-[11px] text-slate-300">الناقد والمدقق العروضي الذكي</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- الحاوية الرئيسية -->
+  <main class="flex-1 flex flex-col relative w-full pt-[4.75rem] pb-24 bg-[#F8FAFC]">
+    <div class="flex flex-col w-full text-right px-4 space-y-4 max-w-lg mx-auto">
+
+      <!-- ================= TAB 1: المحلل ================= -->
+      <div id="tab-analyzer" class="space-y-4">
+        
+        <!-- بطاقة الإدخال -->
+        <div class="relative w-full overflow-hidden rounded-2xl bg-white border border-slate-200/90 shadow-sm p-4">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div class="flex items-center gap-2.5">
+              <div class="w-10 h-10 rounded-xl bg-navy-900 text-gold-400 flex items-center justify-center shadow-sm">
+                <span class="material-symbols-outlined text-2xl">auto_stories</span>
+              </div>
+              <div>
+                <span class="text-[11px] text-gold-600 font-bold block">الديوان الذكي</span>
+                <h2 class="text-base text-navy-900 font-bold leading-tight">مُحَلِّلُ الشِّعْرِ العَرَبِيّ</h2>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-3 space-y-2.5">
+            <!-- صف التسمية -->
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-bold text-navy-900 flex items-center gap-1.5" for="verse-input">
+                <span class="material-symbols-outlined text-gold-600 text-[18px]">edit_note</span>
+                <span>أدخل شطري البيت الشعري أو البيت كاملاً</span>
+              </label>
+              <span id="char-count" class="text-xs text-slate-400 font-medium">0 حرف</span>
+            </div>
+
+            <!-- صندوق النص -->
+            <div class="rounded-xl bg-slate-50 border border-slate-200 p-2.5 focus-within:border-royal-700 focus-within:ring-2 focus-within:ring-royal-100 transition-all">
+              <textarea
+                id="verse-input"
+                rows="3"
+                dir="rtl"
+                class="w-full bg-transparent p-1 font-verse text-[19px] text-navy-900 placeholder:text-slate-400 focus:outline-none resize-none leading-relaxed"
+                placeholder="عَلى قَدْرِ أَهْلِ العَزْمِ تَأْتِي العَزَائِمُ ... وَتَأْتِي عَلَى قَدْرِ الكِرَامِ المَكَارِمُ"
+              ></textarea>
+              <div class="flex items-center justify-between px-1 pt-1.5 border-t border-slate-200/70 text-[11px] text-slate-500">
+                <span>افصل بين الصدر والعجز بـ (...) أو (/)</span>
+                <span class="text-royal-900 font-bold">✤ بحور الخليل الفراهيدي ✤</span>
+              </div>
+            </div>
+
+            <!-- الخيارات -->
+            <div class="grid grid-cols-3 gap-2 pt-1">
+              <label class="cursor-pointer flex items-center justify-center gap-1.5 p-2 rounded-lg bg-slate-50 border border-slate-200 hover:border-royal-700 hover:bg-royal-50/50 transition-colors">
+                <input id="opt-meter" type="checkbox" checked class="w-3.5 h-3.5 accent-[#D97706] rounded-sm text-gold-600 focus:ring-0" />
+                <span class="text-xs font-bold text-navy-900">العروض والبحر</span>
+              </label>
+              <label class="cursor-pointer flex items-center justify-center gap-1.5 p-2 rounded-lg bg-slate-50 border border-slate-200 hover:border-royal-700 hover:bg-royal-50/50 transition-colors">
+                <input id="opt-diacritics" type="checkbox" checked class="w-3.5 h-3.5 accent-[#D97706] rounded-sm text-gold-600 focus:ring-0" />
+                <span class="text-xs font-bold text-navy-900">الضبط والتشكيل</span>
+              </label>
+              <label class="cursor-pointer flex items-center justify-center gap-1.5 p-2 rounded-lg bg-slate-50 border border-slate-200 hover:border-royal-700 hover:bg-royal-50/50 transition-colors">
+                <input id="opt-grammar" type="checkbox" checked class="w-3.5 h-3.5 accent-[#D97706] rounded-sm text-gold-600 focus:ring-0" />
+                <span class="text-xs font-bold text-navy-900">الإعراب والنحو</span>
+              </label>
+            </div>
+
+            <!-- الأزرار -->
+            <div class="flex items-center gap-2 pt-1">
+              <button
+                id="btn-analyze"
+                type="button"
+                class="flex-1 py-3 px-3 rounded-xl bg-gold-600 hover:bg-gold-700 active:bg-gold-700 text-white flex items-center justify-center gap-2 text-sm font-bold shadow-sm transition-all active:scale-[0.99]"
+              >
+                <span class="material-symbols-outlined text-[20px] text-gold-100" style="font-variation-settings:'FILL' 1">auto_awesome</span>
+                <span>تحليل البيت الشعري</span>
+              </button>
+              <button
+                id="btn-sample"
+                type="button"
+                title="نموذج بيت شعري"
+                class="px-3.5 py-3 rounded-xl bg-white border border-slate-200 hover:border-royal-700 text-navy-900 flex items-center justify-center text-xs font-bold transition-colors shadow-sm gap-1"
+              >
+                <span class="material-symbols-outlined text-[18px] text-royal-700">history_edu</span>
+                <span class="hidden sm:inline">نموذج</span>
+              </button>
+              <button
+                id="btn-clear"
+                type="button"
+                title="مسح الحقل"
+                class="p-3 rounded-xl bg-white border border-slate-200 hover:border-red-400 text-red-600 flex items-center justify-center transition-colors shadow-sm"
+              >
+                <span class="material-symbols-outlined text-[18px]">backspace</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- بطاقة التحميل (مخفية افتراضياً، تظهر فقط أثناء العمل الحقيقي) -->
+        <div id="loading-card" class="hidden rounded-2xl bg-white border border-slate-200 p-6 text-center space-y-4 shadow-sm">
+          <div class="relative w-14 h-14 mx-auto flex items-center justify-center">
+            <div class="absolute inset-0 rounded-full border-4 border-slate-100 animate-spin border-t-gold-600 border-r-royal-900"></div>
+            <span class="material-symbols-outlined text-gold-600 text-2xl">ink_pen</span>
+          </div>
+          <div>
+            <h3 class="text-base text-navy-900 font-bold">جاري موازنة البيت وتدقيقه...</h3>
+            <p class="text-xs text-slate-500">نستخرج التفاعيل، ونفحص الزحافات والعلل، وندقق الإعراب الصرفي</p>
+          </div>
+          <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+            <div class="bg-gradient-to-r from-royal-900 via-gold-500 to-royal-900 h-full w-2/3 animate-[pulse_1.5s_infinite]"></div>
+          </div>
+        </div>
+
+        <!-- حاوية النتائج الديناميكية (تظهر بعد التحليل فقط) -->
+        <div id="results-container" class="hidden space-y-4">
+          
+          <!-- القسم أ: بطاقة البحر والتفعيلات -->
+          <div id="card-meter-section" class="rounded-2xl bg-royal-900 text-white p-4 shadow-md space-y-3.5 border border-royal-800">
+            <!-- الرأس -->
+            <div class="flex items-start justify-between">
+              <div class="space-y-1.5">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="px-2.5 py-0.5 rounded-full bg-gold-500/20 border border-gold-400/40 text-gold-300 text-[11px] font-bold">البحر العروضي</span>
+                  <span id="meter-status-badge" class="px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-[11px] font-semibold flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[13px]">verified</span>
+                    <span id="meter-status-text">موزون وسليم عروضياً</span>
+                  </span>
+                </div>
+                <h3 id="meter-title" class="text-xl font-bold text-white">بَحْرُ الطَّوِيل (التّام)</h3>
+                <div id="meter-secondary-candidates" class="hidden text-xs text-gold-300 font-medium"></div>
+              </div>
+              <div class="w-10 h-10 rounded-xl bg-navy-900/60 border border-royal-700 flex items-center justify-center text-gold-400">
+                <span class="material-symbols-outlined text-2xl">music_note</span>
+              </div>
+            </div>
+
+            <!-- حاوية الشطرين -->
+            <div id="shatrs-container" class="space-y-2.5">
+              <!-- ديناميكي للشطر الأول والشطر الثاني -->
+            </div>
+
+            <!-- صندوق العروض والضرب -->
+            <div id="arud-darb-box" class="rounded-lg bg-navy-900/60 border border-royal-800/70 p-2 space-y-1 text-xs">
+              <div><span class="text-gold-300 font-bold" id="arud-text">العروض:</span> <span class="text-slate-300" id="arud-desc">...</span></div>
+              <div id="darb-row"><span class="text-gold-300 font-bold" id="darb-text">الضرب:</span> <span class="text-slate-300" id="darb-desc">...</span></div>
+            </div>
+
+            <!-- تنبيه الكسر وتصحيح الوزن (إن وجد كسر) -->
+            <div id="broken-correction-box" class="hidden rounded-xl bg-amber-950/60 border border-amber-600/40 p-3 space-y-2 text-xs">
+              <div class="flex items-center gap-1.5 text-amber-300 font-bold">
+                <span class="material-symbols-outlined text-[16px]">warning</span>
+                <span>تنبيه الكسر العروضي وأقرب البحور:</span>
+              </div>
+              <p id="broken-explanation" class="text-slate-200 leading-relaxed"></p>
+              <div id="broken-closest-meters" class="grid grid-cols-3 gap-1.5 pt-1"></div>
+              <div class="p-2 rounded bg-navy-900/80 border border-amber-500/30 text-[11px] space-y-1 font-mono" data-allow-tracking="true">
+                <div>الترميز الحالي: <span id="current-pattern-display" class="text-amber-300"></span></div>
+                <div>الترميز المتوقع: <span id="expected-pattern-display" class="text-emerald-300"></span></div>
+              </div>
+            </div>
+
+            <!-- صندوق الكتابة العروضية والرموز الصوتية -->
+            <div class="rounded-xl bg-navy-900/85 border border-royal-800 p-3 space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-gold-400 font-bold flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-[15px]">graphic_eq</span>
+                  <span>الكتابة العروضية والرموز الصوتية</span>
+                </span>
+                <button id="btn-toggle-symbols" type="button" class="px-2 py-0.5 rounded bg-royal-800 border border-royal-700 text-[10px] text-blue-200 hover:text-white font-mono">
+                  نمط الرموز: <span id="symbols-mode-label">// o</span>
+                </button>
+              </div>
+              
+              <div id="prosodic-writing-sadr" class="font-verse text-[17px] text-blue-100 font-medium pt-0.5 leading-loose flex flex-wrap gap-x-2"></div>
+              <div id="prosodic-writing-ajuz" class="font-verse text-[17px] text-blue-100 font-medium pt-0.5 leading-loose flex flex-wrap gap-x-2 border-t border-royal-800/60"></div>
+              
+              <p id="prosodic-summary-text" class="text-xs text-slate-300 pt-1 leading-normal"></p>
+            </div>
+
+            <!-- أزرار حفظ ونسخ النتيجة -->
+            <div class="flex items-center justify-end gap-2 pt-1 border-t border-royal-800">
+              <button id="btn-save-analysis" type="button" class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-navy-900/80 border border-royal-700 hover:border-gold-500 text-gold-300 text-xs font-bold transition-colors">
+                <span class="material-symbols-outlined text-sm">bookmark_add</span>
+                <span>حفظ في المحفوظات</span>
+              </button>
+              <button id="btn-copy-analysis" type="button" class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-navy-900/80 border border-royal-700 hover:border-gold-500 text-blue-200 text-xs font-bold transition-colors">
+                <span class="material-symbols-outlined text-sm">content_copy</span>
+                <span>نسخ التحليل كاملاً</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- القسم ب: الضبط والتشكيل -->
+          <div id="card-diacritics-section" class="relative overflow-hidden rounded-2xl bg-white border border-slate-200 p-4 shadow-sm space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+              <div class="flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-gold-600 text-xl">format_quote</span>
+                <h4 class="text-base text-navy-900 font-bold">الضبط الكامل والتشكيل المصحح</h4>
+              </div>
+              <div class="flex items-center gap-2">
+                <button id="btn-edit-tashkeel" type="button" class="flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-50 border border-slate-200 hover:border-royal-700 text-navy-900 transition-colors text-xs font-bold">
+                  <span class="material-symbols-outlined text-sm text-royal-800">edit</span>
+                  <span id="edit-tashkeel-btn-text">تعديل التشكيل</span>
+                </button>
+                <button id="btn-copy-verse" type="button" class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200 hover:border-royal-700 text-navy-900 transition-colors">
+                  <span class="material-symbols-outlined text-base text-royal-800">content_copy</span>
+                  <span class="text-xs font-bold">نسخ البيت</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- عرض النص المضبوط -->
+            <div id="tashkeel-view-box" class="relative rounded-xl bg-slate-50 border border-royal-100 p-4 text-center space-y-2">
+              <p id="formatted-sadr" class="font-verse text-[22px] text-navy-900 font-bold leading-relaxed"></p>
+              <div id="formatted-divider" class="flex items-center justify-center gap-2 text-gold-600 text-xs">
+                <span>✤</span>
+                <span class="w-16 h-px bg-gold-400"></span>
+                <span>✤</span>
+              </div>
+              <p id="formatted-ajuz" class="font-verse text-[22px] text-navy-900 font-bold leading-relaxed"></p>
+              
+              <div id="doc-badge-container" class="pt-3 text-center hidden">
+                <span id="doc-badge-text" class="inline-block px-3 py-1 rounded-full bg-white border border-slate-200 text-slate-700 text-xs font-medium"></span>
+              </div>
+            </div>
+
+            <!-- صندوق تعديل التشكيل اليدوي (مخفي افتراضياً) -->
+            <div id="tashkeel-edit-box" class="hidden space-y-2">
+              <textarea
+                id="edit-tashkeel-textarea"
+                rows="3"
+                dir="rtl"
+                class="w-full rounded-xl bg-slate-50 border border-royal-300 p-3 font-verse text-[20px] text-navy-900 leading-relaxed focus:outline-none focus:ring-2 focus:ring-royal-100"
+              ></textarea>
+              <div class="flex items-center justify-end gap-2">
+                <button id="btn-reanalyze-tashkeel" type="button" class="px-4 py-2 rounded-xl bg-gold-600 text-white font-bold text-xs shadow-sm hover:bg-gold-700 transition-colors flex items-center gap-1">
+                  <span class="material-symbols-outlined text-sm">refresh</span>
+                  <span>إعادة التحليل بالتشكيل الجديد</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- القسم ج: الإعراب والنحو -->
+          <div id="card-grammar-section" class="rounded-2xl bg-white border border-slate-200 p-4 shadow-sm space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+              <div class="flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-royal-800 text-xl">account_tree</span>
+                <h4 class="text-base text-navy-900 font-bold">الإعراب والسلامة النحوية</h4>
+              </div>
+              <span id="grammar-status-badge" class="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold">
+                سليم لغوياً
+              </span>
+            </div>
+            <p class="text-[11px] text-slate-500">تحليل نحوي بالذكاء الاصطناعي وقد يخطئ</p>
+
+            <!-- شبكة الكلمات المعربة -->
+            <div id="grammar-words-container" class="space-y-2">
+              <!-- ديناميكي -->
+            </div>
+
+            <!-- لافتة السلامة النحوية -->
+            <div class="rounded-xl bg-royal-50 border border-royal-200 p-3 flex items-center gap-2.5">
+              <span class="material-symbols-outlined text-royal-800 text-xl shrink-0">verified_user</span>
+              <p id="grammar-summary-text" class="text-xs text-navy-900 font-medium leading-relaxed"></p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ================= TAB 2: قاموس البحور ================= -->
+      <div id="tab-meters" class="hidden space-y-4">
+        <div class="flex items-center justify-between pb-1">
+          <div>
+            <h2 class="text-lg text-navy-900 font-bold">بحور الشعر العربي الستة عشر</h2>
+            <p class="text-xs text-slate-500">مفاتيح الخليل الفراهيدي وأوزانها وأبيات الشاهد</p>
+          </div>
+          <span class="px-2.5 py-1 rounded-full bg-royal-50 text-royal-800 border border-royal-200 text-xs font-bold">
+            ١٦ بحراً
+          </span>
+        </div>
+
+        <div id="meters-list-container" class="space-y-3">
+          <!-- ديناميكي من meters.json -->
+        </div>
+      </div>
+
+      <!-- ================= TAB 3: المحفوظات ================= -->
+      <div id="tab-saved" class="hidden space-y-4">
+
+        <!-- بطاقة الإعدادات والتذكيرات اليومية -->
+        <div class="rounded-2xl bg-white border border-slate-200 p-4 shadow-sm space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-navy-900 text-gold-400 flex items-center justify-center">
+                <span class="material-symbols-outlined text-lg">notifications</span>
+              </div>
+              <div>
+                <h3 class="text-sm text-navy-900 font-bold">تذكيرات وإعدادات ميزان</h3>
+                <span class="text-[11px] text-slate-500">التنبيهات والأبيات اليومية</span>
+              </div>
+            </div>
+            <span id="notif-permission-badge" class="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-bold border border-slate-200">
+              غير مفعلة
+            </span>
+          </div>
+
+          <p class="text-xs text-slate-600 leading-relaxed">
+            تتيح لك التنبيهات استلام بيت شعري يومي مع بحره، والتنبيه عند اكتمال موازنة الأبيات المطولة.
+          </p>
+
+          <div class="space-y-2.5 pt-1">
+            <!-- خيار 1: تذكير يومي ببيت شعري -->
+            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+              <div class="space-y-0.5">
+                <span class="text-xs font-bold text-navy-900 block">تذكير يومي ببيت شعري</span>
+                <span class="text-[10px] text-slate-500 block">يرسل بيتاً منتقى مع بحره وشاعره</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <input id="daily-reminder-time" type="time" value="09:00" class="text-xs p-1 rounded border border-slate-200 bg-white font-mono text-navy-900 focus:outline-none" />
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input id="toggle-daily-reminder" type="checkbox" class="sr-only peer">
+                  <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-gold-600"></div>
+                </label>
+              </div>
+            </div>
+
+            <!-- خيار 2: تنبيه اكتمال التحليل -->
+            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+              <div class="space-y-0.5">
+                <span class="text-xs font-bold text-navy-900 block">تنبيه اكتمال التحليل</span>
+                <span class="text-[10px] text-slate-500 block">إشعار عند انتهاء المعالجة والتدقيق</span>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input id="toggle-analysis-notif" type="checkbox" checked class="sr-only peer">
+                <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-gold-600"></div>
+              </label>
+            </div>
+          </div>
+
+          <!-- زر تجربة الإشعار الآن -->
+          <div class="flex items-center justify-between pt-1">
+            <span id="notif-support-status" class="text-[11px] text-slate-400"></span>
+            <button id="btn-test-notification" type="button" class="px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-royal-700 text-royal-900 text-xs font-bold transition-colors flex items-center gap-1">
+              <span class="material-symbols-outlined text-[15px]">send</span>
+              <span>تجربة إشعار بيت اليوم</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between pb-1">
+          <div>
+            <h2 class="text-lg text-navy-900 font-bold">الأبيات والتحليلات المحفوظة</h2>
+            <p class="text-xs text-slate-500">سجل الأبيات التي قمت بتحليلها مسبقاً</p>
+          </div>
+          <button id="btn-clear-all-saved" type="button" class="hidden px-2.5 py-1 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-bold hover:bg-red-100 transition-colors">
+            حذف الكل
+          </button>
+        </div>
+
+        <div id="saved-verses-container" class="space-y-3">
+          <!-- ديناميكي -->
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- الشريط السفلي الثابت -->
+  <nav class="fixed bottom-0 w-full z-50 pb-safe bg-[#0A192F] text-slate-300 border-t border-royal-900/60 shadow-lg">
+    <div class="flex items-center justify-around h-16 px-4 max-w-lg mx-auto">
+      <button id="nav-btn-analyzer" type="button" class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] w-full transition-colors text-gold-400 font-bold">
+        <span class="material-symbols-outlined text-2xl" style="font-variation-settings:'FILL' 1">auto_awesome</span>
+        <span class="text-xs mt-0.5">المحلل</span>
+      </button>
+      <button id="nav-btn-meters" type="button" class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] w-full text-slate-300 hover:text-white transition-colors font-medium">
+        <span class="material-symbols-outlined text-2xl">menu_book</span>
+        <span class="text-xs mt-0.5">البحور</span>
+      </button>
+      <button id="nav-btn-saved" type="button" class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] w-full text-slate-300 hover:text-white transition-colors font-medium">
+        <span class="material-symbols-outlined text-2xl">bookmarks</span>
+        <span class="text-xs mt-0.5">المحفوظات</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Toast للإشعارات السريعة -->
+  <div id="toast" class="fixed bottom-20 left-1/2 -translate-x-1/2 px-4 py-2 rounded-xl bg-navy-900 border border-gold-500/40 text-gold-400 text-xs font-bold shadow-xl flex items-center gap-2 transition-opacity duration-300 z-50 opacity-0 pointer-events-none">
+    <span class="material-symbols-outlined text-sm text-gold-400">done_all</span>
+    <span id="toast-text">تمت العملية بنجاح!</span>
+  </div>
+
+  <!-- التطبيق والمنطق البرمجي -->
+  <script>
+    (function () {
+      // عناصر واجهة المستخدم
+      const verseInput = document.getElementById('verse-input');
+      const charCount = document.getElementById('char-count');
+      const btnAnalyze = document.getElementById('btn-analyze');
+      const btnSample = document.getElementById('btn-sample');
+      const btnClear = document.getElementById('btn-clear');
+      
+      const optMeter = document.getElementById('opt-meter');
+      const optDiacritics = document.getElementById('opt-diacritics');
+      const optGrammar = document.getElementById('opt-grammar');
+
+      const loadingCard = document.getElementById('loading-card');
+      const resultsContainer = document.getElementById('results-container');
+
+      const cardMeterSection = document.getElementById('card-meter-section');
+      const meterStatusBadge = document.getElementById('meter-status-badge');
+      const meterStatusText = document.getElementById('meter-status-text');
+      const meterTitle = document.getElementById('meter-title');
+      const meterSecondaryCandidates = document.getElementById('meter-secondary-candidates');
+      const shatrsContainer = document.getElementById('shatrs-container');
+      const arudDarbBox = document.getElementById('arud-darb-box');
+      const arudText = document.getElementById('arud-text');
+      const arudDesc = document.getElementById('arud-desc');
+      const darbRow = document.getElementById('darb-row');
+      const darbText = document.getElementById('darb-text');
+      const darbDesc = document.getElementById('darb-desc');
+      const brokenCorrectionBox = document.getElementById('broken-correction-box');
+      const brokenExplanation = document.getElementById('broken-explanation');
+      const brokenClosestMeters = document.getElementById('broken-closest-meters');
+      const currentPatternDisplay = document.getElementById('current-pattern-display');
+      const expectedPatternDisplay = document.getElementById('expected-pattern-display');
+
+      const prosodicWritingSadr = document.getElementById('prosodic-writing-sadr');
+      const prosodicWritingAjuz = document.getElementById('prosodic-writing-ajuz');
+      const prosodicSummaryText = document.getElementById('prosodic-summary-text');
+      const btnToggleSymbols = document.getElementById('btn-toggle-symbols');
+      const symbolsModeLabel = document.getElementById('symbols-mode-label');
+
+      const cardDiacriticsSection = document.getElementById('card-diacritics-section');
+      const formattedSadr = document.getElementById('formatted-sadr');
+      const formattedDivider = document.getElementById('formatted-divider');
+      const formattedAjuz = document.getElementById('formatted-ajuz');
+      const docBadgeContainer = document.getElementById('doc-badge-container');
+      const docBadgeText = document.getElementById('doc-badge-text');
+      const btnCopyVerse = document.getElementById('btn-copy-verse');
+      const btnEditTashkeel = document.getElementById('btn-edit-tashkeel');
+      const editTashkeelBtnText = document.getElementById('edit-tashkeel-btn-text');
+      const tashkeelViewBox = document.getElementById('tashkeel-view-box');
+      const tashkeelEditBox = document.getElementById('tashkeel-edit-box');
+      const editTashkeelTextarea = document.getElementById('edit-tashkeel-textarea');
+      const btnReanalyzeTashkeel = document.getElementById('btn-reanalyze-tashkeel');
+
+      const cardGrammarSection = document.getElementById('card-grammar-section');
+      const grammarStatusBadge = document.getElementById('grammar-status-badge');
+      const grammarWordsContainer = document.getElementById('grammar-words-container');
+      const grammarSummaryText = document.getElementById('grammar-summary-text');
+
+      const btnSaveAnalysis = document.getElementById('btn-save-analysis');
+      const btnCopyAnalysis = document.getElementById('btn-copy-analysis');
+
+      const tabAnalyzer = document.getElementById('tab-analyzer');
+      const tabMeters = document.getElementById('tab-meters');
+      const tabSaved = document.getElementById('tab-saved');
+      const navBtnAnalyzer = document.getElementById('nav-btn-analyzer');
+      const navBtnMeters = document.getElementById('nav-btn-meters');
+      const navBtnSaved = document.getElementById('nav-btn-saved');
+      const metersListContainer = document.getElementById('meters-list-container');
+      const savedVersesContainer = document.getElementById('saved-verses-container');
+      const btnClearAllSaved = document.getElementById('btn-clear-all-saved');
+
+      const toast = document.getElementById('toast');
+      const toastText = document.getElementById('toast-text');
+
+      // حالة التطبيق
+      let currentAnalysisResult = null;
+      let currentSymbolsMode = '// o'; // '// o' أو '1 0'
+      let isEditingTashkeel = false;
+      let toastTimer = null;
+
+      const SAMPLE_VERSE = 'عَلى قَدْرِ أَهْلِ العَزْمِ تَأْتِي العَزَائِمُ ... وَتَأْتِي عَلَى قَدْرِ الكِرَامِ المَكَارِمُ';
+
+      // إشعار Toast
+      function showToast(msg) {
+        if (!toast) return;
+        toastText.textContent = msg;
+        toast.classList.remove('opacity-0', 'pointer-events-none');
+        toast.classList.add('opacity-100');
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+          toast.classList.remove('opacity-100');
+          toast.classList.add('opacity-0', 'pointer-events-none');
+        }, 2500);
+      }
+
+      // نسخ إلى الحافظة
+      function copyText(text, successMsg) {
+        if (window.AndroidBridge && window.AndroidBridge.copyToClipboard) {
+          window.AndroidBridge.copyToClipboard(text);
+          showToast(successMsg);
+          return;
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(() => {
+            showToast(successMsg);
+          }).catch(() => {
+            fallbackCopy(text, successMsg);
+          });
+        } else {
+          fallbackCopy(text, successMsg);
+        }
+      }
+
+      function fallbackCopy(text, msg) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try {
+          document.execCommand('copy');
+          showToast(msg);
+        } catch (e) {
+          showToast('تم نسخ النص');
+        }
+        document.body.removeChild(ta);
+      }
+
+      // استرجاع مفتاح API
+      function getGeminiApiKey() {
+        if (window.AndroidBridge && window.AndroidBridge.getApiKey) {
+          const k = window.AndroidBridge.getApiKey();
+          if (k) return k;
+        }
+        if (typeof process !== 'undefined' && process.env && process.env.GEMINI_API_KEY) {
+          return process.env.GEMINI_API_KEY;
+        }
+        return '';
+      }
+
+      // عداد الحروف
+      if (verseInput && charCount) {
+        verseInput.addEventListener('input', () => {
+          charCount.textContent = `${verseInput.value.length} حرف`;
+        });
+      }
+
+      // زر النموذج
+      if (btnSample && verseInput) {
+        btnSample.addEventListener('click', () => {
+          verseInput.value = SAMPLE_VERSE;
+          verseInput.dispatchEvent(new Event('input'));
+          showToast('تم إدراج بيت المتنبي الشهير');
+        });
+      }
+
+      // زر المسح
+      if (btnClear && verseInput) {
+        btnClear.addEventListener('click', () => {
+          verseInput.value = '';
+          verseInput.dispatchEvent(new Event('input'));
+          resultsContainer.classList.add('hidden');
+          currentAnalysisResult = null;
+          showToast('تم مسح الحقل والنتائج');
+        });
+      }
+
+      // تقسيم البيت إلى صدر وعجز
+      function splitVerse(raw) {
+        const text = raw.trim();
+        let sadr = '';
+        let ajuz = '';
+
+        if (text.includes('...')) {
+          const parts = text.split('...');
+          sadr = parts[0].trim();
+          ajuz = parts.slice(1).join(' ').trim();
+        } else if (text.includes('…')) {
+          const parts = text.split('…');
+          sadr = parts[0].trim();
+          ajuz = parts.slice(1).join(' ').trim();
+        } else if (text.includes('/')) {
+          const parts = text.split('/');
+          sadr = parts[0].trim();
+          ajuz = parts.slice(1).join(' ').trim();
+        } else if (text.includes('–') || text.includes('-')) {
+          const parts = text.split(/[–-]/);
+          sadr = parts[0].trim();
+          ajuz = parts.slice(1).join(' ').trim();
+        } else if (text.includes('\n')) {
+          const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+          sadr = lines[0] || '';
+          ajuz = lines[1] || '';
+        } else {
+          // مسافة طويلة أو شطر مفرد
+          const words = text.split(/\s+/);
+          if (words.length >= 6) {
+            const mid = Math.floor(words.length / 2);
+            sadr = words.slice(0, mid).join(' ');
+            ajuz = words.slice(mid).join(' ');
+          } else {
+            sadr = text;
+            ajuz = '';
+          }
+        }
+        return { sadr, ajuz };
+      }
+
+      // استدعاء Gemini لخدمات التشكيل والإعراب والتوثيق
+      async function callGeminiService(task, payload) {
+        const apiKey = getGeminiApiKey();
+        if (!apiKey) {
+          throw new Error('NO_API_KEY');
+        }
+
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
+        let prompt = '';
+        let responseSchema = null;
+
+        if (task === 'diacritics') {
+          prompt = `أنت عالم لغوي وعروضي خبير في الشعر العربي.
+شكّل النص الشعري العربي التالي تشكيلاً كاملاً دقيقاً حسب قواعد النطق وأعراف العروض للشعر العربي.
+ممنوع منعاً باتاً تغيير أو تبديل أو حذف أي حرف من حروف النص الأصلي، وممنوع إضافة أي شرح أو مقدمات.
+أعد الناتج ككائن JSON يحوي صدر البيت وعجزه.
+النص:
+الصدر: ${payload.sadr}
+العجز: ${payload.ajuz || 'لا يوجد'}`;
+
+          responseSchema = {
+            type: "OBJECT",
+            properties: {
+              sadr: { type: "STRING" },
+              ajuz: { type: "STRING" }
+            },
+            required: ["sadr", "ajuz"]
+          };
+        } else if (task === 'grammar_and_doc') {
+          prompt = `أعرب كلمات البيت الشعري التالي إعراباً وافياً ومختصراً حتى 6 كلمات رئيسية، مع تحديد الدور النحوي، ولخص السلامة النحوية (سليم أو فيه لحن).
+كذلك وثق نسبة البيت (الشاعر، العصر، القافية) إن كان مشهوراً، وضع null لأي حقل غير مؤكد ولا تختلق نسبة أبداً.
+البيت:
+${payload.fullVerse}`;
+
+          responseSchema = {
+            type: "OBJECT",
+            properties: {
+              words: {
+                type: "ARRAY",
+                items: {
+                  type: "OBJECT",
+                  properties: {
+                    word: { type: "STRING" },
+                    role: { type: "STRING" },
+                    explanation: { type: "STRING" }
+                  },
+                  required: ["word", "role", "explanation"]
+                }
+              },
+              summary: { type: "STRING" },
+              hasError: { type: "BOOLEAN" },
+              poet: { type: "STRING" },
+              era: { type: "STRING" },
+              rhyme: { type: "STRING" }
+            },
+            required: ["words", "summary", "hasError"]
+          };
+        }
+
+        const body = {
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            temperature: 0.1,
+            responseMimeType: "application/json",
+            responseSchema: responseSchema
+          }
+        };
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 20000);
+
+        try {
+          const resp = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
+
+          if (!resp.ok) {
+            throw new Error(`HTTP_${resp.status}`);
+          }
+
+          const data = await resp.json();
+          const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+          const cleanedText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+          return JSON.parse(cleanedText);
+        } catch (err) {
+          clearTimeout(timeoutId);
+          throw err;
+        }
+      }
+
+      // التحقق من سلامة التشكيل (الحروف الأصلية لم تتغير)
+      function verifyTashkeelIntegrity(original, vocalized) {
+        const strip = s => (s || '').replace(/[\u064B-\u0652\u0670\s\p{P}]/gu, '');
+        return strip(original) === strip(vocalized);
+      }
+
+      // الدالة الرئيسية لتنفيذ التحليل
+      async function runAnalysis() {
+        const inputRaw = (verseInput?.value || '').trim();
+        if (!inputRaw) {
+          showToast('يرجى كتابة أو اختيار بيت شعري أولاً');
+          return;
+        }
+
+        // إظهار بطاقة التحميل
+        resultsContainer.classList.add('hidden');
+        loadingCard.classList.remove('hidden');
+
+        try {
+          const startTime = Date.now();
+          let { sadr, ajuz } = splitVerse(inputRaw);
+          const fullRaw = ajuz ? `${sadr} ... ${ajuz}` : sadr;
+
+          // فحص نسبة التشكيل
+          const ratioSadr = ArudiEngine.calculateVocalizationRatio(sadr);
+          const ratioAjuz = ajuz ? ArudiEngine.calculateVocalizationRatio(ajuz) : 1;
+          const avgRatio = ajuz ? ((ratioSadr + ratioAjuz) / 2) : ratioSadr;
+
+          let vocalizedSadr = sadr;
+          let vocalizedAjuz = ajuz;
+          let grammarData = null;
+
+          // 1. التشكيل عبر الذكاء الاصطناعي إن لم تكن النسبة كافية
+          if (avgRatio < 0.85 && optDiacritics.checked) {
+            try {
+              const res = await callGeminiService('diacritics', { sadr, ajuz });
+              if (res && res.sadr) {
+                if (verifyTashkeelIntegrity(sadr, res.sadr)) {
+                  vocalizedSadr = res.sadr;
+                }
+                if (ajuz && res.ajuz && verifyTashkeelIntegrity(ajuz, res.ajuz)) {
+                  vocalizedAjuz = res.ajuz;
+                }
+              }
+            } catch (e) {
+              console.warn('Tashkeel call skipped/failed:', e);
+              showToast('تعذّر الاتصال بخدمة التشكيل، أدخل البيت مشكولًا أو حاول لاحقًا');
+            }
+          }
+
+          // 2. المحرك العروضي الحتمي
+          const sadrAnalysis = ArudiEngine.toArudi(vocalizedSadr, false);
+          const ajuzAnalysis = vocalizedAjuz ? ArudiEngine.toArudi(vocalizedAjuz, true) : null;
+          const meterResult = ArudiEngine.detectMeter(sadrAnalysis, ajuzAnalysis);
+
+          // 3. الإعراب والتوثيق إن طُلبا
+          if (optGrammar.checked) {
+            try {
+              grammarData = await callGeminiService('grammar_and_doc', { fullVerse: vocalizedAjuz ? `${vocalizedSadr} ... ${vocalizedAjuz}` : vocalizedSadr });
+            } catch (e) {
+              console.warn('Grammar call failed:', e);
+            }
+          }
+
+          // إعداد كائن النتيجة
+          currentAnalysisResult = {
+            inputRaw,
+            vocalizedSadr,
+            vocalizedAjuz,
+            meterResult,
+            sadrAnalysis,
+            ajuzAnalysis,
+            grammarData,
+            timestamp: Date.now()
+          };
+
+          // عرض النتائج في الواجهة
+          renderResults(currentAnalysisResult);
+
+          loadingCard.classList.add('hidden');
+          resultsContainer.classList.remove('hidden');
+
+          if (meterResult.isSound) {
+            showToast('اكتمل ميزان البيت بنجاح وسلامة عروضية ✓');
+          } else {
+            showToast('الوزن به انكسار عروضي، تم استخراج أقرب البحور');
+          }
+
+          // تنبيه اكتمال التحليل إن كان مفعلاً واستغرقت المعالجة وقتاً
+          const elapsed = Date.now() - startTime;
+          if (toggleAnalysisNotif && toggleAnalysisNotif.checked && elapsed > 800) {
+            notify('ميزان: اكتمل التدقيق العروضي', `النتيجة: ${meterResult.fullMeterTitle} (${meterResult.isSound ? 'موزون وسليم' : 'الوزن مكسور'})`);
+          }
+
+        } catch (err) {
+          loadingCard.classList.add('hidden');
+          console.error(err);
+          showToast('حدث خطأ أثناء معالجة البيت، يرجى المحاولة ثانية');
+        }
+      }
+
+      // عرض النتائج في الواجهة
+      function renderResults(data) {
+        const { meterResult, vocalizedSadr, vocalizedAjuz, sadrAnalysis, ajuzAnalysis, grammarData } = data;
+
+        // بطاقة العروض والبحر
+        if (optMeter.checked) {
+          cardMeterSection.classList.remove('hidden');
+
+          if (meterResult.isSound) {
+            meterStatusBadge.className = 'px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-[11px] font-semibold flex items-center gap-1';
+            meterStatusBadge.querySelector('.material-symbols-outlined').textContent = 'verified';
+            meterStatusText.textContent = 'موزون وسليم عروضياً';
+            brokenCorrectionBox.classList.add('hidden');
+          } else {
+            meterStatusBadge.className = 'px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-400/30 text-amber-300 text-[11px] font-semibold flex items-center gap-1';
+            meterStatusBadge.querySelector('.material-symbols-outlined').textContent = 'warning';
+            meterStatusText.textContent = 'الوزن مكسور';
+            renderBrokenCorrection(meterResult.correction);
+          }
+
+          meterTitle.textContent = meterResult.fullMeterTitle;
+
+          // الاحتمالات الأخرى إن وجدت
+          if (meterResult.secondaryMatches && meterResult.secondaryMatches.length > 0) {
+            meterSecondaryCandidates.classList.remove('hidden');
+            meterSecondaryCandidates.textContent = 'احتمالات أخرى مقبولة: ' + meterResult.secondaryMatches.map(m => `بحر ${m.meterName} (${m.formType})`).join(' ، ');
+          } else {
+            meterSecondaryCandidates.classList.add('hidden');
+          }
+
+          // عرض الشطرين وتفعيلاتهما
+          renderShatrs(meterResult);
+
+          // سطرا العروض والضرب
+          arudText.textContent = meterResult.sadrMatch.endFootTitle + ':';
+          arudDesc.textContent = `${meterResult.sadrMatch.endFootName} (${meterResult.sadrMatch.endFootDesc})`;
+
+          if (meterResult.ajuzMatch) {
+            darbRow.classList.remove('hidden');
+            darbText.textContent = meterResult.ajuzMatch.endFootTitle + ':';
+            darbDesc.textContent = `${meterResult.ajuzMatch.endFootName} (${meterResult.ajuzMatch.endFootDesc})`;
+          } else {
+            darbRow.classList.add('hidden');
+          }
+
+          // الكتابة العروضية والمقاطع القابلة للمس
+          renderProsodicWriting(sadrAnalysis, ajuzAnalysis, meterResult);
+          prosodicSummaryText.textContent = meterResult.prosodicExplanation;
+
+        } else {
+          cardMeterSection.classList.add('hidden');
+        }
+
+        // بطاقة الضبط والتشكيل
+        if (optDiacritics.checked) {
+          cardDiacriticsSection.classList.remove('hidden');
+          formattedSadr.textContent = vocalizedSadr;
+          if (vocalizedAjuz) {
+            formattedDivider.classList.remove('hidden');
+            formattedAjuz.classList.remove('hidden');
+            formattedAjuz.textContent = vocalizedAjuz;
+          } else {
+            formattedDivider.classList.add('hidden');
+            formattedAjuz.classList.add('hidden');
+          }
+
+          // شارة التوثيق إن وجدت
+          if (grammarData && (grammarData.poet || grammarData.era || grammarData.rhyme)) {
+            docBadgeContainer.classList.remove('hidden');
+            const parts = [];
+            if (grammarData.poet) parts.push(grammarData.poet);
+            if (grammarData.era) parts.push(`العصر ${grammarData.era}`);
+            if (grammarData.rhyme) parts.push(`القافية: ${grammarData.rhyme}`);
+            docBadgeText.textContent = parts.join(' • ');
+          } else {
+            docBadgeContainer.classList.add('hidden');
+          }
+
+          // إعادة تهيئة وضع التعديل
+          isEditingTashkeel = false;
+          tashkeelViewBox.classList.remove('hidden');
+          tashkeelEditBox.classList.add('hidden');
+          editTashkeelBtnText.textContent = 'تعديل التشكيل';
+
+        } else {
+          cardDiacriticsSection.classList.add('hidden');
+        }
+
+        // بطاقة الإعراب والنحو
+        if (optGrammar.checked && grammarData) {
+          cardGrammarSection.classList.remove('hidden');
+
+          if (grammarData.hasError) {
+            grammarStatusBadge.className = 'px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-xs font-bold';
+            grammarStatusBadge.textContent = 'فيه ملاحظات لغوية';
+          } else {
+            grammarStatusBadge.className = 'px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold';
+            grammarStatusBadge.textContent = 'سليم لغوياً';
+          }
+
+          grammarSummaryText.textContent = grammarData.summary || 'البيت خالٍ من اللحن النحوي ومستقيم التراكيب.';
+
+          // الكلمات المعربة
+          grammarWordsContainer.innerHTML = '';
+          const wordsList = grammarData.words || [];
+          wordsList.slice(0, 6).forEach(w => {
+            const card = document.createElement('div');
+            card.className = 'rounded-xl bg-slate-50 border border-slate-200/90 p-3 flex flex-col gap-1';
+            card.innerHTML = `
+              <div class="flex items-center justify-between">
+                <span class="font-verse text-[19px] text-navy-900 font-bold">${escapeHtml(w.word)}</span>
+                <span class="text-xs px-2 py-0.5 rounded bg-royal-50 text-royal-800 font-bold">${escapeHtml(w.role)}</span>
+              </div>
+              <p class="text-xs text-slate-600 leading-relaxed">${escapeHtml(w.explanation)}</p>
+            `;
+            grammarWordsContainer.appendChild(card);
+          });
+
+        } else {
+          cardGrammarSection.classList.add('hidden');
+        }
+      }
+
+      // عرض الشطرين وشبكة التفعيلات
+      function renderShatrs(meterResult) {
+        shatrsContainer.innerHTML = '';
+
+        const shatrs = [meterResult.sadrMatch];
+        if (meterResult.ajuzMatch) shatrs.push(meterResult.ajuzMatch);
+
+        shatrs.forEach((shatr, sIdx) => {
+          const feetCount = shatr.feet.length;
+          let gridColsClass = 'grid-cols-4';
+          if (feetCount === 3) gridColsClass = 'grid-cols-3';
+          else if (feetCount === 2) gridColsClass = 'grid-cols-2';
+
+          const box = document.createElement('div');
+          box.className = 'rounded-xl bg-navy-900/70 border border-royal-800/80 p-3 space-y-1.5';
+          box.id = `shatr-box-${sIdx}`;
+
+          const headerRow = `
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-gold-400 font-bold">${shatr.shatrTitle}</span>
+              <span class="text-[11px] text-slate-300 font-medium">${shatr.feetCountText}</span>
+            </div>
+            <p class="font-verse text-[20px] text-white leading-relaxed">${escapeHtml(shatr.text)}</p>
+          `;
+
+          let feetHtml = `<div class="grid ${gridColsClass} gap-1.5 pt-1">`;
+          shatr.feet.forEach((foot, fIdx) => {
+            const isLast = (fIdx === feetCount - 1);
+            const nameColor = isLast ? 'text-white' : 'text-gold-300';
+            const displayPattern = formatSymbolDisplay(foot.pattern, currentSymbolsMode);
+
+            feetHtml += `
+              <div id="foot-item-${sIdx}-${fIdx}" class="foot-card rounded-lg bg-royal-800/60 border border-royal-700/60 p-1.5 text-center transition-all">
+                <div class="font-verse text-base ${nameColor} font-bold">${escapeHtml(foot.name)}</div>
+                <div class="text-[11px] text-blue-200 font-mono" data-allow-tracking="true">${displayPattern}</div>
+                <div class="text-[10px] text-slate-300">${escapeHtml(foot.description)}</div>
+              </div>
+            `;
+          });
+          feetHtml += `</div>`;
+
+          box.innerHTML = headerRow + feetHtml;
+          shatrsContainer.appendChild(box);
+        });
+      }
+
+      // تحويل الرمز حسب النمط المختار
+      function formatSymbolDisplay(pattern, mode) {
+        if (mode === '1 0') {
+          return pattern;
+        }
+        return ArudiEngine.binaryToTraditionalSymbols(pattern);
+      }
+
+      // عرض الكتابة العروضية والمقاطع القابلة للنقر والتمييز
+      function renderProsodicWriting(sadrAnalysis, ajuzAnalysis, meterResult) {
+        renderPhoneticWords(prosodicWritingSadr, sadrAnalysis, 0);
+
+        if (ajuzAnalysis) {
+          prosodicWritingAjuz.classList.remove('hidden');
+          renderPhoneticWords(prosodicWritingAjuz, ajuzAnalysis, 1);
+        } else {
+          prosodicWritingAjuz.classList.add('hidden');
+        }
+      }
+
+      function renderPhoneticWords(container, shatrAnalysis, shatrIndex) {
+        container.innerHTML = '';
+        if (!shatrAnalysis) return;
+
+        let totalSyllablesCount = 0;
+
+        shatrAnalysis.words.forEach((w, wIdx) => {
+          const wordSpan = document.createElement('span');
+          wordSpan.className = 'inline-block p-1 rounded hover:bg-royal-800/80 cursor-pointer transition-colors';
+          wordSpan.textContent = w.phoneticText || w.originalText;
+          wordSpan.title = `الترميز: ${w.binaryPattern} (${ArudiEngine.binaryToTraditionalSymbols(w.binaryPattern)})`;
+
+          // تفاعل لمس المقطع لإبراز تفعيلته
+          wordSpan.addEventListener('click', () => {
+            highlightFootForWord(shatrIndex, wIdx);
+          });
+
+          container.appendChild(wordSpan);
+          totalSyllablesCount += w.syllables.length;
+        });
+      }
+
+      // إبراز التفعيلة المقابلة للكلمة
+      function highlightFootForWord(shatrIndex, wordIndex) {
+        document.querySelectorAll('.foot-card').forEach(el => el.classList.remove('foot-highlight'));
+        // تقريب موقع التفعيلة بناء على مؤشر الكلمة
+        const shatrBox = document.getElementById(`shatr-box-${shatrIndex}`);
+        if (!shatrBox) return;
+        const footCards = shatrBox.querySelectorAll('.foot-card');
+        const targetFootIndex = Math.min(Math.floor(wordIndex / 1.5), footCards.length - 1);
+        const card = footCards[targetFootIndex];
+        if (card) {
+          card.classList.add('foot-highlight');
+          setTimeout(() => card.classList.remove('foot-highlight'), 2200);
+        }
+      }
+
+      // عرض تفاصيل الكسر العروضي
+      function renderBrokenCorrection(corr) {
+        if (!corr) return;
+        brokenCorrectionBox.classList.remove('hidden');
+        brokenExplanation.textContent = corr.explanation;
+
+        currentPatternDisplay.textContent = formatSymbolDisplay(corr.currentBinary, currentSymbolsMode);
+        expectedPatternDisplay.textContent = formatSymbolDisplay(corr.expectedBinary, currentSymbolsMode);
+
+        brokenClosestMeters.innerHTML = '';
+        (corr.closestMeters || []).forEach(m => {
+          const d = document.createElement('div');
+          d.className = 'p-1.5 rounded-lg bg-navy-900/70 border border-amber-600/30 text-center';
+          d.innerHTML = `
+            <div class="text-[11px] text-amber-200 font-bold">${escapeHtml(m.name)}</div>
+            <div class="text-[9px] text-slate-300">${escapeHtml(m.type)} (فارق ${m.distance})</div>
+          `;
+          brokenClosestMeters.appendChild(d);
+        });
+      }
+
+      // تبديل شكل الرموز العروضية
+      if (btnToggleSymbols) {
+        btnToggleSymbols.addEventListener('click', () => {
+          currentSymbolsMode = currentSymbolsMode === '// o' ? '1 0' : '// o';
+          symbolsModeLabel.textContent = currentSymbolsMode;
+          if (currentAnalysisResult) {
+            renderResults(currentAnalysisResult);
+          }
+          showToast(`تم التبديل إلى نمط الرموز (${currentSymbolsMode})`);
+        });
+      }
+
+      // تعديل التشكيل اليدوي
+      if (btnEditTashkeel) {
+        btnEditTashkeel.addEventListener('click', () => {
+          isEditingTashkeel = !isEditingTashkeel;
+          if (isEditingTashkeel && currentAnalysisResult) {
+            const s = currentAnalysisResult.vocalizedSadr || '';
+            const a = currentAnalysisResult.vocalizedAjuz || '';
+            editTashkeelTextarea.value = a ? `${s} ... ${a}` : s;
+            tashkeelViewBox.classList.add('hidden');
+            tashkeelEditBox.classList.remove('hidden');
+            editTashkeelBtnText.textContent = 'إلغاء التعديل';
+          } else {
+            tashkeelViewBox.classList.remove('hidden');
+            tashkeelEditBox.classList.add('hidden');
+            editTashkeelBtnText.textContent = 'تعديل التشكيل';
+          }
+        });
+      }
+
+      // إعادة التحليل بعد تعديل التشكيل اليدوي
+      if (btnReanalyzeTashkeel) {
+        btnReanalyzeTashkeel.addEventListener('click', () => {
+          const newText = editTashkeelTextarea.value.trim();
+          if (!newText) return;
+          verseInput.value = newText;
+          verseInput.dispatchEvent(new Event('input'));
+          runAnalysis();
+        });
+      }
+
+      // نسخ البيت مشكولاً
+      if (btnCopyVerse) {
+        btnCopyVerse.addEventListener('click', () => {
+          if (!currentAnalysisResult) return;
+          const s = currentAnalysisResult.vocalizedSadr || '';
+          const a = currentAnalysisResult.vocalizedAjuz || '';
+          const full = a ? `${s} ... ${a}` : s;
+          copyText(full, 'تم نسخ البيت مشكولاً إلى الحافظة');
+        });
+      }
+
+      // نسخ التحليل كاملاً
+      if (btnCopyAnalysis) {
+        btnCopyAnalysis.addEventListener('click', () => {
+          if (!currentAnalysisResult) return;
+          const r = currentAnalysisResult;
+          const fullVerse = r.vocalizedAjuz ? `${r.vocalizedSadr} ... ${r.vocalizedAjuz}` : r.vocalizedSadr;
+          const report = `محلل الشعر العربي:
+البيت: ${fullVerse}
+البحر: ${r.meterResult.fullMeterTitle} (${r.meterResult.isSound ? 'موزون وسليم' : 'مكسور'})
+${r.meterResult.arudDescription}
+${r.meterResult.darbDescription}
+الكتابة العروضية: ${r.meterResult.prosodicExplanation}`;
+
+          copyText(report, 'تم نسخ تقرير التحليل كاملاً');
+        });
+      }
+
+      // حفظ التحليل في المحفوظات
+      if (btnSaveAnalysis) {
+        btnSaveAnalysis.addEventListener('click', () => {
+          if (!currentAnalysisResult) return;
+          const savedList = getSavedVerses();
+          const r = currentAnalysisResult;
+          const fullVerse = r.vocalizedAjuz ? `${r.vocalizedSadr} ... ${r.vocalizedAjuz}` : r.vocalizedSadr;
+
+          const item = {
+            id: 'verse_' + Date.now(),
+            verse: fullVerse,
+            meterName: r.meterResult.fullMeterTitle,
+            isSound: r.meterResult.isSound,
+            date: new Date().toLocaleDateString('ar-EG', { year: 'numeric', month: 'short', day: 'numeric' })
+          };
+
+          savedList.unshift(item);
+          localStorage.setItem('arudi_saved_verses', JSON.stringify(savedList));
+          showToast('تم حفظ البيت في قائمة المحفوظات ✓');
+          renderSavedTab();
+        });
+      }
+
+      // زر التحليل الرئيسي
+      if (btnAnalyze) {
+        btnAnalyze.addEventListener('click', runAnalysis);
+      }
+
+      // ================= إدارة تبويبات التنقل =================
+      function switchTab(tabId) {
+        [tabAnalyzer, tabMeters, tabSaved].forEach(el => el.classList.add('hidden'));
+        [navBtnAnalyzer, navBtnMeters, navBtnSaved].forEach(el => {
+          el.className = 'flex flex-col items-center justify-center min-w-[44px] min-h-[44px] w-full text-slate-300 hover:text-white transition-colors font-medium';
+          const icon = el.querySelector('.material-symbols-outlined');
+          if (icon) icon.style.fontVariationSettings = "'FILL' 0";
+        });
+
+        if (tabId === 'analyzer') {
+          tabAnalyzer.classList.remove('hidden');
+          navBtnAnalyzer.className = 'flex flex-col items-center justify-center min-w-[44px] min-h-[44px] w-full transition-colors text-gold-400 font-bold';
+          navBtnAnalyzer.querySelector('.material-symbols-outlined').style.fontVariationSettings = "'FILL' 1";
+        } else if (tabId === 'meters') {
+          tabMeters.classList.remove('hidden');
+          navBtnMeters.className = 'flex flex-col items-center justify-center min-w-[44px] min-h-[44px] w-full transition-colors text-gold-400 font-bold';
+          navBtnMeters.querySelector('.material-symbols-outlined').style.fontVariationSettings = "'FILL' 1";
+          renderMetersTab();
+        } else if (tabId === 'saved') {
+          tabSaved.classList.remove('hidden');
+          navBtnSaved.className = 'flex flex-col items-center justify-center min-w-[44px] min-h-[44px] w-full transition-colors text-gold-400 font-bold';
+          navBtnSaved.querySelector('.material-symbols-outlined').style.fontVariationSettings = "'FILL' 1";
+          renderSavedTab();
+        }
+      }
+
+      if (navBtnAnalyzer) navBtnAnalyzer.addEventListener('click', () => switchTab('analyzer'));
+      if (navBtnMeters) navBtnMeters.addEventListener('click', () => switchTab('meters'));
+      if (navBtnSaved) navBtnSaved.addEventListener('click', () => switchTab('saved'));
+
+      // ================= بناء تبويب البحور (Meters Dictionary) =================
+      function renderMetersTab() {
+        if (!metersListContainer) return;
+        metersListContainer.innerHTML = '';
+
+        const allMeters = ArudiEngine.METERS || [];
+
+        allMeters.forEach(meter => {
+          const form = meter.forms[0] || {};
+          const basesText = (form.bases || []).join(' • ');
+
+          const card = document.createElement('div');
+          card.className = 'rounded-2xl bg-white border border-slate-200 p-4 shadow-sm space-y-3';
+          card.innerHTML = `
+            <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-navy-900 text-gold-400 flex items-center justify-center font-bold text-sm">
+                  ${meter.name[0]}
+                </div>
+                <div>
+                  <h3 class="text-base text-navy-900 font-bold">بحر ${escapeHtml(meter.name)}</h3>
+                  <span class="text-[11px] text-slate-500">${escapeHtml(form.type || 'تام')}</span>
+                </div>
+              </div>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-royal-50 text-royal-800 font-bold border border-royal-200">
+                ${meter.forms.length > 1 ? 'تام ومجزوء' : (form.type || 'تام')}
+              </span>
+            </div>
+
+            <p class="text-xs text-slate-600 leading-relaxed">${escapeHtml(meter.description)}</p>
+
+            <div class="rounded-xl bg-slate-50 border border-royal-100 p-3 space-y-1.5 text-center">
+              <span class="text-[10px] text-gold-600 font-bold block">مفتاح البحر والتفعيلات:</span>
+              <p class="font-verse text-base text-navy-900 font-bold">${escapeHtml(meter.keyVerse)}</p>
+              <div class="text-xs text-slate-500 font-mono" data-allow-tracking="true">${escapeHtml(basesText)}</div>
+            </div>
+
+            <div class="p-3 rounded-xl bg-royal-50/60 border border-royal-100/80 space-y-1 text-right">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] text-royal-900 font-bold">بيت الشاهد:</span>
+                <span class="text-[10px] text-slate-500">${escapeHtml(meter.examplePoet)}</span>
+              </div>
+              <p class="font-verse text-[17px] text-navy-900 font-medium leading-relaxed">${escapeHtml(meter.exampleVerse)}</p>
+            </div>
+
+            <div class="flex items-center justify-end pt-1">
+              <button type="button" class="btn-try-meter flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gold-600 hover:bg-gold-700 text-white text-xs font-bold shadow-sm transition-colors" data-verse="${escapeHtml(meter.exampleVerse)}">
+                <span class="material-symbols-outlined text-[16px]">play_arrow</span>
+                <span>جرّبه في المحلل</span>
+              </button>
+            </div>
+          `;
+
+          const tryBtn = card.querySelector('.btn-try-meter');
+          if (tryBtn) {
+            tryBtn.addEventListener('click', () => {
+              const v = tryBtn.getAttribute('data-verse');
+              verseInput.value = v;
+              verseInput.dispatchEvent(new Event('input'));
+              switchTab('analyzer');
+              runAnalysis();
+            });
+          }
+
+          metersListContainer.appendChild(card);
+        });
+      }
+
+      // ================= إدارة تبويب المحفوظات =================
+      function getSavedVerses() {
+        try {
+          const raw = localStorage.getItem('arudi_saved_verses');
+          return raw ? JSON.parse(raw) : [];
+        } catch (e) {
+          return [];
+        }
+      }
+
+      function renderSavedTab() {
+        if (!savedVersesContainer) return;
+        const list = getSavedVerses();
+        savedVersesContainer.innerHTML = '';
+
+        if (list.length === 0) {
+          btnClearAllSaved.classList.add('hidden');
+          savedVersesContainer.innerHTML = `
+            <div class="rounded-2xl bg-white border border-slate-200 p-8 text-center space-y-3 shadow-sm">
+              <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 mx-auto flex items-center justify-center">
+                <span class="material-symbols-outlined text-2xl">bookmarks</span>
+              </div>
+              <div>
+                <h3 class="text-sm text-navy-900 font-bold">لا توجد أبيات محفوظة بعد</h3>
+                <p class="text-xs text-slate-500 pt-1">عند تحليل أي بيت شعري، اضغط "حفظ في المحفوظات" للرجوع إليه هنا في أي وقت.</p>
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        btnClearAllSaved.classList.remove('hidden');
+
+        list.forEach(item => {
+          const card = document.createElement('div');
+          card.className = 'rounded-2xl bg-white border border-slate-200 p-4 shadow-sm space-y-2.5';
+          card.innerHTML = `
+            <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+              <span class="text-xs font-bold text-navy-900">${escapeHtml(item.meterName)}</span>
+              <span class="text-[10px] text-slate-400">${escapeHtml(item.date)}</span>
+            </div>
+            <p class="font-verse text-[18px] text-navy-900 font-bold leading-relaxed">${escapeHtml(item.verse)}</p>
+            <div class="flex items-center justify-end gap-2 pt-1">
+              <button type="button" class="btn-open-saved px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200 hover:border-royal-700 text-navy-900 text-xs font-bold transition-colors flex items-center gap-1" data-verse="${escapeHtml(item.verse)}">
+                <span class="material-symbols-outlined text-sm text-royal-800">open_in_new</span>
+                <span>فتح</span>
+              </button>
+              <button type="button" class="btn-copy-saved px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200 hover:border-royal-700 text-navy-900 text-xs font-bold transition-colors flex items-center gap-1" data-verse="${escapeHtml(item.verse)}">
+                <span class="material-symbols-outlined text-sm text-royal-800">content_copy</span>
+                <span>نسخ</span>
+              </button>
+              <button type="button" class="btn-del-saved p-1.5 rounded-lg bg-slate-50 border border-slate-200 hover:border-red-400 text-red-600 transition-colors" data-id="${item.id}" title="حذف">
+                <span class="material-symbols-outlined text-sm">delete</span>
+              </button>
+            </div>
+          `;
+
+          const openBtn = card.querySelector('.btn-open-saved');
+          if (openBtn) {
+            openBtn.addEventListener('click', () => {
+              verseInput.value = openBtn.getAttribute('data-verse');
+              verseInput.dispatchEvent(new Event('input'));
+              switchTab('analyzer');
+              runAnalysis();
+            });
+          }
+
+          const copyBtn = card.querySelector('.btn-copy-saved');
+          if (copyBtn) {
+            copyBtn.addEventListener('click', () => {
+              copyText(copyBtn.getAttribute('data-verse'), 'تم نسخ البيت إلى الحافظة');
+            });
+          }
+
+          const delBtn = card.querySelector('.btn-del-saved');
+          if (delBtn) {
+            delBtn.addEventListener('click', () => {
+              const id = delBtn.getAttribute('data-id');
+              const newList = getSavedVerses().filter(x => x.id !== id);
+              localStorage.setItem('arudi_saved_verses', JSON.stringify(newList));
+              showToast('تم حذف البيت من المحفوظات');
+              renderSavedTab();
+            });
+          }
+
+          savedVersesContainer.appendChild(card);
+        });
+      }
+
+      if (btnClearAllSaved) {
+        btnClearAllSaved.addEventListener('click', () => {
+          if (confirm('هل أنت متأكد من رغبتك في حذف جميع الأبيات المحفوظة؟')) {
+            localStorage.removeItem('arudi_saved_verses');
+            showToast('تم إفراغ قائمة المحفوظات');
+            renderSavedTab();
+          }
+        });
+      }
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      // ================= الشاشة الافتتاحية (Splash Screen) =================
+      const splashScreen = document.getElementById('splash-screen');
+      const splashContent = document.getElementById('splash-content');
+
+      function initSplashScreen() {
+        if (!splashScreen) return;
+        const alreadyShown = sessionStorage.getItem('mizan_splash_shown');
+        if (alreadyShown) {
+          splashScreen.style.display = 'none';
+          return;
+        }
+
+        // ظهور تدريجي 500ms
+        setTimeout(() => {
+          if (splashContent) splashContent.classList.remove('opacity-0');
+        }, 50);
+
+        // يبقى نحو 1.5 ثانية ثم يختفي خلال 300ms
+        setTimeout(() => {
+          splashScreen.classList.add('opacity-0', 'pointer-events-none');
+          setTimeout(() => {
+            splashScreen.style.display = 'none';
+          }, 300);
+          sessionStorage.setItem('mizan_splash_shown', 'true');
+        }, 1500);
+
+        // حد أقصى للحماية (2.5 ثانية) مهما حدث
+        setTimeout(() => {
+          if (splashScreen.style.display !== 'none') {
+            splashScreen.style.display = 'none';
+            sessionStorage.setItem('mizan_splash_shown', 'true');
+          }
+        }, 2500);
+      }
+      initSplashScreen();
+
+      // ================= تسجيل Service Worker =================
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').catch(err => {
+          console.log('SW notice:', err);
+        });
+      }
+
+      // ================= التنبيهات والإعدادات وأبيات اليوم =================
+      const notifPermissionBadge = document.getElementById('notif-permission-badge');
+      const notifSupportStatus = document.getElementById('notif-support-status');
+      const toggleDailyReminder = document.getElementById('toggle-daily-reminder');
+      const dailyReminderTime = document.getElementById('daily-reminder-time');
+      const toggleAnalysisNotif = document.getElementById('toggle-analysis-notif');
+      const btnTestNotification = document.getElementById('btn-test-notification');
+
+      let dailyVersesList = [];
+      async function loadDailyVerses() {
+        try {
+          const res = await fetch('daily-verses.json');
+          if (res.ok) {
+            dailyVersesList = await res.json();
+          }
+        } catch (e) {
+          console.log('Daily verses fetch fallback:', e);
+        }
+      }
+      loadDailyVerses();
+
+      function updateNotificationUI() {
+        if (!('Notification' in window)) {
+          if (notifPermissionBadge) {
+            notifPermissionBadge.className = 'text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-400 font-bold border border-slate-200';
+            notifPermissionBadge.textContent = 'غير مدعوم';
+          }
+          if (notifSupportStatus) {
+            notifSupportStatus.textContent = 'التنبيهات غير مدعومة في هذه البيئة';
+          }
+          if (toggleDailyReminder) toggleDailyReminder.disabled = true;
+          return;
+        }
+
+        const perm = Notification.permission;
+        if (perm === 'granted') {
+          if (notifPermissionBadge) {
+            notifPermissionBadge.className = 'text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold border border-emerald-200';
+            notifPermissionBadge.textContent = 'مفعلة ✓';
+          }
+          if (notifSupportStatus) notifSupportStatus.textContent = '';
+        } else if (perm === 'denied') {
+          if (notifPermissionBadge) {
+            notifPermissionBadge.className = 'text-[10px] px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 font-bold border border-amber-200';
+            notifPermissionBadge.textContent = 'مرفوضة';
+          }
+          if (notifSupportStatus) notifSupportStatus.textContent = 'تم حظر التنبيهات من المتصفح';
+        } else {
+          if (notifPermissionBadge) {
+            notifPermissionBadge.className = 'text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-bold border border-slate-200';
+            notifPermissionBadge.textContent = 'غير مفعلة';
+          }
+        }
+
+        if (toggleDailyReminder) {
+          toggleDailyReminder.checked = localStorage.getItem('mizan_daily_enabled') === 'true' && perm === 'granted';
+        }
+        if (dailyReminderTime) {
+          dailyReminderTime.value = localStorage.getItem('mizan_daily_time') || '09:00';
+        }
+        if (toggleAnalysisNotif) {
+          toggleAnalysisNotif.checked = localStorage.getItem('mizan_analysis_notif') !== 'false';
+        }
+      }
+
+      async function requestNotificationPermission() {
+        if (!('Notification' in window)) {
+          showToast('التنبيهات غير مدعومة في هذا المتصفح');
+          return false;
+        }
+        try {
+          const perm = await Notification.requestPermission();
+          updateNotificationUI();
+          return perm === 'granted';
+        } catch (e) {
+          console.error(e);
+          return false;
+        }
+      }
+
+      async function notify(title, body) {
+        if (!('Notification' in window)) return false;
+        if (Notification.permission !== 'granted') return false;
+
+        const options = {
+          body,
+          icon: 'logo.png',
+          badge: 'logo.png',
+          dir: 'rtl',
+          lang: 'ar',
+          tag: 'mizan-reminder-' + Date.now(),
+          renotify: true,
+          silent: false
+        };
+
+        try {
+          if ('serviceWorker' in navigator) {
+            const reg = await navigator.serviceWorker.ready;
+            if (reg && reg.showNotification) {
+              reg.showNotification(title, options);
+              return true;
+            }
+          }
+          new Notification(title, options);
+          return true;
+        } catch (err) {
+          try {
+            new Notification(title, options);
+            return true;
+          } catch (e) {
+            console.warn('Notification call error:', e);
+            return false;
+          }
+        }
+      }
+
+      function getRandomVerse() {
+        if (dailyVersesList && dailyVersesList.length > 0) {
+          const idx = Math.floor(Math.random() * dailyVersesList.length);
+          return dailyVersesList[idx];
+        }
+        return {
+          verse: "عَلى قَدْرِ أَهْلِ العَزْمِ تَأْتِي العَزَائِمُ ... وَتَأْتِي عَلَى قَدْرِ الكِرَامِ المَكَارِمُ",
+          poet: "أبو الطيب المتنبي",
+          meter: "الطويل"
+        };
+      }
+
+      if (toggleDailyReminder) {
+        toggleDailyReminder.addEventListener('change', async () => {
+          if (toggleDailyReminder.checked) {
+            const granted = await requestNotificationPermission();
+            if (granted) {
+              localStorage.setItem('mizan_daily_enabled', 'true');
+              showToast('تم تفعيل التذكير اليومي ببيت شعري ✓');
+            } else {
+              toggleDailyReminder.checked = false;
+              localStorage.setItem('mizan_daily_enabled', 'false');
+              showToast('يلزم منح إذن التنبيهات لتفعيل التذكير اليومي');
+            }
+          } else {
+            localStorage.setItem('mizan_daily_enabled', 'false');
+            showToast('تم تعطيل التذكير اليومي');
+          }
+          updateNotificationUI();
+        });
+      }
+
+      if (dailyReminderTime) {
+        dailyReminderTime.addEventListener('change', () => {
+          localStorage.setItem('mizan_daily_time', dailyReminderTime.value);
+          showToast(`تم حفظ موعد التذكير اليومي: ${dailyReminderTime.value}`);
+        });
+      }
+
+      if (toggleAnalysisNotif) {
+        toggleAnalysisNotif.addEventListener('change', () => {
+          localStorage.setItem('mizan_analysis_notif', toggleAnalysisNotif.checked ? 'true' : 'false');
+          showToast(toggleAnalysisNotif.checked ? 'تم تفعيل تنبيه اكتمال التحليل' : 'تم تعطيل تنبيه التحليل');
+        });
+      }
+
+      if (btnTestNotification) {
+        btnTestNotification.addEventListener('click', async () => {
+          if (!('Notification' in window)) {
+            showToast('التنبيهات غير مدعومة في هذه البيئة');
+            return;
+          }
+          if (Notification.permission !== 'granted') {
+            const granted = await requestNotificationPermission();
+            if (!granted) {
+              showToast('يرجى السماح بالتنبيهات لتلقي أبيات ميزان');
+              return;
+            }
+          }
+          const sample = getRandomVerse();
+          const ok = await notify(`ميزان - بيت اليوم (${sample.meter})`, `${sample.verse} • ${sample.poet}`);
+          if (ok) {
+            showToast('تم إرسال إشعار بيت اليوم بنجاح ✓');
+          } else {
+            showToast('تعذر إظهار الإشعار في متصفحك الحالي');
+          }
+        });
+      }
+
+      // فحص دوري لموعد التذكير اليومي
+      setInterval(() => {
+        if (localStorage.getItem('mizan_daily_enabled') !== 'true') return;
+        if (!('Notification' in window) || Notification.permission !== 'granted') return;
+
+        const now = new Date();
+        const currentHM = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        const targetHM = localStorage.getItem('mizan_daily_time') || '09:00';
+        const todayKey = now.toDateString();
+
+        if (currentHM === targetHM && localStorage.getItem('mizan_last_daily_date') !== todayKey) {
+          localStorage.setItem('mizan_last_daily_date', todayKey);
+          const v = getRandomVerse();
+          notify(`ميزان - بيت اليوم (${v.meter})`, `${v.verse} • ${v.poet}`);
+        }
+      }, 30000);
+
+      updateNotificationUI();
+
+    })();
+  </script>
+</body>
+</html>
