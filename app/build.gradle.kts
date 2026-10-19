@@ -152,17 +152,11 @@ tasks.register("copyReleaseOutputs") {
     releaseDir.mkdirs()
 
     if (bundleFile.exists()) {
-      bundleFile.copyTo(file("${rootDir}/Release/Release.aab"), overwrite = true)
       bundleFile.copyTo(file("${rootDir}/Release/Release.abb"), overwrite = true)
-      bundleFile.copyTo(file("${rootDir}/Release/app-release.aab"), overwrite = true)
-      bundleFile.copyTo(file("${rootDir}/Release.aab"), overwrite = true)
-      bundleFile.copyTo(file("${rootDir}/Release.abb"), overwrite = true)
     }
 
     if (apkFile.exists()) {
       apkFile.copyTo(file("${rootDir}/Release/Release.apk"), overwrite = true)
-      apkFile.copyTo(file("${rootDir}/Release/app-release.apk"), overwrite = true)
-      apkFile.copyTo(file("${rootDir}/Release.apk"), overwrite = true)
     }
   }
 }
