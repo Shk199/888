@@ -144,21 +144,29 @@ dependencies {
   "ksp"(libs.moshi.kotlin.codegen)
 }
 
-tasks.register("copyReleaseBundle") {
+tasks.register("copyReleaseOutputs") {
   doLast {
     val bundleFile = file("build/outputs/bundle/release/app-release.aab")
+    val apkFile = file("build/outputs/apk/release/app-release.apk")
+    val releaseDir = file("${rootDir}/Release")
+    releaseDir.mkdirs()
+
     if (bundleFile.exists()) {
-      val releaseDir = file("${rootDir}/Release")
-      releaseDir.mkdirs()
       bundleFile.copyTo(file("${rootDir}/Release/Release.aab"), overwrite = true)
       bundleFile.copyTo(file("${rootDir}/Release/Release.abb"), overwrite = true)
       bundleFile.copyTo(file("${rootDir}/Release/app-release.aab"), overwrite = true)
       bundleFile.copyTo(file("${rootDir}/Release.aab"), overwrite = true)
       bundleFile.copyTo(file("${rootDir}/Release.abb"), overwrite = true)
     }
+
+    if (apkFile.exists()) {
+      apkFile.copyTo(file("${rootDir}/Release/Release.apk"), overwrite = true)
+      apkFile.copyTo(file("${rootDir}/Release/app-release.apk"), overwrite = true)
+      apkFile.copyTo(file("${rootDir}/Release.apk"), overwrite = true)
+    }
   }
 }
 
-tasks.matching { it.name == "signReleaseBundle" || it.name == "bundleRelease" }.configureEach {
-  finalizedBy("copyReleaseBundle")
+tasks.matching { it.name == "signReleaseBundle" || it.name == "bundleRelease" || it.name == "packageRelease" || it.name == "assembleRelease" }.configureEach {
+  finalizedBy("copyReleaseOutputs")
 }
