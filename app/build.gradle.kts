@@ -145,6 +145,7 @@ dependencies {
 }
 
 tasks.register("copyReleaseOutputs") {
+  notCompatibleWithConfigurationCache("Copies release artifacts to Release directory")
   doLast {
     val bundleFile = file("build/outputs/bundle/release/app-release.aab")
     val apkFile = file("build/outputs/apk/release/app-release.apk")
