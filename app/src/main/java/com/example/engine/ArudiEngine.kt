@@ -97,79 +97,139 @@ object ArudiEngine {
             var word = rawWords[wIndex]
             val isFirstWordInShatr = (wIndex == 0)
             val isLastWordInShatr = (wIndex == rawWords.size - 1)
-            val prevWord = if (wIndex > 0) processedWords[wIndex - 1] else null
+            var prevWord = if (wIndex > 0) processedWords[wIndex - 1] else null
 
             // 1. استبدال الكلمات الاستثنائية
             val cleanNoDiacritics = word.replace(Regex("[\\u064B-\\u0652\\u0670]"), "")
+            var isSubstituted = false
             if (PRONUNCIATION_SUBSTITUTIONS.containsKey(word)) {
                 word = PRONUNCIATION_SUBSTITUTIONS[word]!!
+                isSubstituted = true
             } else if (PRONUNCIATION_SUBSTITUTIONS.containsKey(cleanNoDiacritics)) {
                 word = PRONUNCIATION_SUBSTITUTIONS[cleanNoDiacritics]!!
+                isSubstituted = true
             }
 
             // 2. ألف واو الجماعة
             word = word.replace(Regex("ُوَا?(\\b|$)"), "ُو$1").replace("ُوا", "ُو")
 
             // 3. أل التعريف والهمزات وحروف العطف والجر المتصلة
-            val particleMatch = Regex("^([وفبك])([\\u064B-\\u0652\\u0670])?ال|^لِ?لْ").find(word)
-            if (particleMatch != null) {
-                val isLil = word.startsWith("لِل") || word.startsWith("لل")
-                val prefixLetter = if (isLil) "لِ" else particleMatch.groupValues[1]
-                val prefixHarakah = if (isLil) KASRA else (particleMatch.groupValues.getOrNull(2)?.ifEmpty { null }
-                    ?: if (prefixLetter == "ب") KASRA else FATHA)
-                val afterAlText = if (isLil) word.replace(Regex("^لِ?لْ?"), "") else word.replace(Regex("^[وفبك][\\u064B-\\u0652\\u0670]?ال"), "")
-                val cleanAfterAl = cleanNoDiacritics.replace(Regex("^[وفبكل]ا?ل"), "")
-                val firstCharAfterAl = cleanAfterAl.firstOrNull() ?: ' '
-                val isSolar = SOLAR_LETTERS.contains(firstCharAfterAl)
+            var solarConsonantToAttach: Char? = null
+            var lunarLamToAttach = false
 
-                word = if (isSolar) {
-                    val cleanChar = afterAlText.replace(Regex("^[\\u064B-\\u0652\\u0670]"), "")
-                    val charBase = cleanChar.firstOrNull() ?: firstCharAfterAl
-                    val restOfWord = if (cleanChar.length > 1) cleanChar.substring(1) else ""
-                    "$prefixLetter$prefixHarakah$charBase$SHADDA$restOfWord"
-                } else {
-                    "$prefixLetter$prefixHarakah" + "لْ" + afterAlText
-                }
-            } else if (cleanNoDiacritics.startsWith("ال") || cleanNoDiacritics.startsWith("ل")) {
-                val nextLetterMatch = cleanNoDiacritics.replace(Regex("^ا?ل"), "").firstOrNull()
-                val isSolar = nextLetterMatch != null && SOLAR_LETTERS.contains(nextLetterMatch)
+            if (!isSubstituted) {
+                val isLil = cleanNoDiacritics.startsWith("لل")
+                val particleMatch = if (isLil) null else Regex("^([وفبك])([\\u064B-\\u0652\\u0670])?ال").find(word)
+                if (isLil) {
+                    val cleanAfterAl = cleanNoDiacritics.substring(2)
+                    val firstCharAfterAl = cleanAfterAl.firstOrNull() ?: ' '
+                    val isSolar = SOLAR_LETTERS.contains(firstCharAfterAl)
+                    val afterAlText = word.replace(Regex("^ل[\\u064B-\\u0652\\u0670]?ل[\\u064B-\\u0652\\u0670]?"), "")
+                    word = if (isSolar) {
+                        val solarVowel = afterAlText.firstOrNull { it in listOf('\u064E', '\u064F', '\u0650') }?.toString() ?: FATHA
+                        val cleanChar = afterAlText.replace(Regex("^[\\u064B-\\u0652\\u0670\\u0651]"), "")
+                        val charBase = cleanChar.firstOrNull() ?: firstCharAfterAl
+                        val restOfWord = afterAlText.replace(Regex("^[أ-ي][\\u064B-\\u0652\\u0670\\u0651]*"), "")
+                        "لِ${charBase}ْ$charBase$solarVowel$restOfWord"
+                    } else {
+                        "لِلْ" + afterAlText.replace(Regex("^[\\u064B-\\u0652\\u0670]"), "")
+                    }
+                } else if (particleMatch != null) {
+                        val prefixLetter = particleMatch.groupValues[1]
+                        val prefixHarakah = particleMatch.groupValues.getOrNull(2)?.ifEmpty { null }
+                            ?: if (prefixLetter == "ب") KASRA else FATHA
+                        val afterAlText = word.replace(Regex("^[وفبك][\\u064B-\\u0652\\u0670]?ال"), "")
+                        val cleanAfterAl = cleanNoDiacritics.replace(Regex("^[وفبك]ال"), "")
+                        val firstCharAfterAl = cleanAfterAl.firstOrNull() ?: ' '
+                        val isSolar = SOLAR_LETTERS.contains(firstCharAfterAl)
 
-                if (isSolar) {
-                    val afterAl = word.replace(Regex("^ا?ل[\\u064B-\\u0652\\u0670]?"), "")
-                    val firstLetter = afterAl.firstOrNull() ?: nextLetterMatch!!
-                    val rest = if (afterAl.length > 1) afterAl.substring(1) else ""
-                    word = if (!isFirstWordInShatr && prevWord != null) {
-                        "$firstLetter$SHADDA$rest"
-                    } else {
-                        "أَ$firstLetter$SHADDA$rest"
+                        word = if (isSolar) {
+                            val solarVowel = afterAlText.firstOrNull { it in listOf('\u064E', '\u064F', '\u0650') }?.toString() ?: FATHA
+                            val cleanChar = afterAlText.replace(Regex("^[\\u064B-\\u0652\\u0670\\u0651]"), "")
+                            val charBase = cleanChar.firstOrNull() ?: firstCharAfterAl
+                            val restOfWord = cleanChar.replace(Regex("^[أ-ي][\\u064B-\\u0652\\u0670\\u0651]*"), "")
+                            "$prefixLetter$prefixHarakah${charBase}ْ$charBase$solarVowel$restOfWord"
+                        } else {
+                            "$prefixLetter$prefixHarakah" + "لْ" + afterAlText
+                        }
+                } else if (Regex("^[وف]([\\u064E\\u064F\\u0650])?ا([سشصضطظتثدذرزمخغفقلنهب])").containsMatchIn(word)) {
+                    // حروف العطف (فـ / وـ) المتصلة بهمزة وصل غير "ال" (مثل: فَاسْتَرَاحَ، وَاسْتَغْفَرَ)
+                    val conj = word.first().toString()
+                    val afterConj = word.substring(1).replace(Regex("^[\\u064E\\u064F\\u0650]"), "")
+                    if (afterConj.startsWith("ا") && !afterConj.startsWith("ال")) {
+                        word = "$conj$FATHA" + afterConj.substring(1)
                     }
-                } else {
-                    val afterAl = word.replace(Regex("^ا?ل[\\u064B-\\u0652\\u0670]?"), "")
-                    word = if (!isFirstWordInShatr && prevWord != null) {
-                        "لْ$afterAl"
+                } else if (cleanNoDiacritics.startsWith("ال")) {
+                    val isRelativePronoun = cleanNoDiacritics in setOf("التي", "الذي", "الذين", "اللاتي", "اللائي", "اللواتي", "اللذان", "اللتان")
+                    if (isRelativePronoun) {
+                        val baseAfterDoubleLam = cleanNoDiacritics.substring(2)
+                        if (!isFirstWordInShatr && prevWord != null) {
+                            lunarLamToAttach = true
+                            word = "لَ$baseAfterDoubleLam"
+                        } else {
+                            word = "أَلْلَ$baseAfterDoubleLam"
+                        }
                     } else {
-                        "أَلْ$afterAl"
+                        val nextLetterMatch = cleanNoDiacritics.replace(Regex("^ال"), "").firstOrNull()
+                        val isSolar = nextLetterMatch != null && SOLAR_LETTERS.contains(nextLetterMatch)
+
+                        if (isSolar) {
+                            val afterAl = word.replace(Regex("^ال[\\u064B-\\u0652\\u0670]?"), "")
+                            val solarVowel = afterAl.firstOrNull { it in listOf('\u064E', '\u064F', '\u0650') }?.toString() ?: FATHA
+                            val cleanChar = afterAl.replace(Regex("^[\\u064B-\\u0652\\u0670]"), "")
+                            val firstLetter = cleanChar.firstOrNull() ?: nextLetterMatch!!
+                            val restOfWord = if (cleanChar.length > 1) cleanChar.substring(1) else ""
+
+                            if (!isFirstWordInShatr && prevWord != null) {
+                                solarConsonantToAttach = firstLetter
+                                word = "$firstLetter$solarVowel$restOfWord"
+                            } else {
+                                word = "أَ$firstLetter$SHADDA$restOfWord"
+                            }
+                        } else {
+                            val afterAl = word.replace(Regex("^ال[\\u064B-\\u0652\\u0670]?"), "")
+                            if (!isFirstWordInShatr && prevWord != null) {
+                                lunarLamToAttach = true
+                                word = afterAl
+                            } else {
+                                word = "أَلْ$afterAl"
+                            }
+                        }
+                    }
+                } else if (Regex("^ا[^ل\\u064E\\u064F\\u0650\\u0652]").containsMatchIn(word)) {
+                    word = if (isFirstWordInShatr) {
+                        "إِ" + word.substring(1)
+                    } else {
+                        word.substring(1)
                     }
                 }
-            } else if (Regex("^ا[^ل\\u064E\\u064F\\u0650\\u0652]").containsMatchIn(word) && !isFirstWordInShatr) {
-                word = word.substring(1)
             }
 
-            // 4. التقاء الساكنين
+            // 4. التقاء الساكنين وإدغام اللام الشمسية / القمرية في الكلمة السابقة
             if (prevWord != null && prevWord.syllables.isNotEmpty()) {
                 val lastSyl = prevWord.syllables.last()
-                if (lastSyl.bit == '0' && LONG_VOWELS.contains(lastSyl.letter.firstOrNull())) {
-                    if (word.startsWith("لْ") || word.startsWith("سْ") || Regex("^[أ-ي]ْ").containsMatchIn(word)) {
-                        val updatedSyls = prevWord.syllables.dropLast(1)
-                        val updatedBinary = updatedSyls.map { it.bit }.joinToString("")
-                        val updatedPhonetic = if (prevWord.phoneticText.isNotEmpty()) prevWord.phoneticText.dropLast(1) else ""
-                        processedWords[wIndex - 1] = prevWord.copy(
-                            syllables = updatedSyls,
-                            binaryPattern = updatedBinary,
-                            phoneticText = updatedPhonetic
-                        )
-                    }
+                val isPrevMadd = lastSyl.bit == '0' && LONG_VOWELS.contains(lastSyl.letter.firstOrNull())
+                val needDropMadd = isPrevMadd && (solarConsonantToAttach != null || lunarLamToAttach || word.startsWith("لْ") || Regex("^[أ-ي]ْ").containsMatchIn(word))
+
+                var updatedSyls = if (needDropMadd) prevWord.syllables.dropLast(1).toMutableList() else prevWord.syllables.toMutableList()
+                var updatedPhonetic = if (needDropMadd) prevWord.phoneticText.replace(Regex("[اويةى]ْ?$"), "") else prevWord.phoneticText
+
+                if (solarConsonantToAttach != null) {
+                    val sc = solarConsonantToAttach.toString()
+                    updatedSyls.add(ArudiSyllable(sc, SUKUN, '0', prevWord.originalText.length))
+                    updatedPhonetic += "${sc}ْ"
+                } else if (lunarLamToAttach) {
+                    updatedSyls.add(ArudiSyllable("ل", SUKUN, '0', prevWord.originalText.length))
+                    updatedPhonetic += "لْ"
                 }
+
+                val updatedBinary = updatedSyls.map { it.bit }.joinToString("")
+                prevWord = prevWord.copy(
+                    syllables = updatedSyls,
+                    binaryPattern = updatedBinary,
+                    phoneticText = updatedPhonetic
+                )
+                processedWords[wIndex - 1] = prevWord
             }
 
             // 5. فك الشدة والتنوين وبناء المقاطع
@@ -226,6 +286,15 @@ object ArudiEngine {
                     syllables.add(ArudiSyllable("ن", SUKUN, '0', i))
                     phoneticWord += "$char${FATHA}نْ"
                     i++
+                    while (i < word.length && word[i].toString().matches(Regex("[\\u064B-\\u0652\\u0670]"))) {
+                        i++
+                    }
+                    if (i < word.length && (word[i] == 'ا' || word[i] == 'ى')) {
+                        val afterAlif = if (i + 1 < word.length) word[i + 1] else ' '
+                        if (!afterAlif.toString().matches(Regex("[\\u064E\\u064F\\u0650\\u0651]"))) {
+                            i++
+                        }
+                    }
                     continue
                 }
 
